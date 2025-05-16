@@ -1,11 +1,11 @@
-// backend.js - Node.js + Express + File-based Store
+// backend.js - Node.js + Express + File-based Store for Render Deployment
 
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Required for Render
 
 const DATA_FILE = path.join(__dirname, 'latestData.json');
 
@@ -31,13 +31,13 @@ app.post('/log', (req, res) => {
 // GET endpoint for website to fetch latest data
 app.get('/api/latest', (req, res) => {
   fs.readFile(DATA_FILE, 'utf8', (err, json) => {
-    if (err) return res.status(500).send('Failed to read data');
+    if (err) return res.status(404).send('No data yet');
     res.header("Content-Type", 'application/json');
     res.send(json);
   });
 });
 
-// Serve the dashboard (optional, if HTML is in public folder)
+// Serve static frontend from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {

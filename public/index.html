@@ -32,7 +32,7 @@
   <script>
     const fetchData = async () => {
       try {
-        const res = await fetch("http://yourserver.com/api/latest"); // Replace with real endpoint
+        const res = await fetch("/api/latest");
         const data = await res.json();
 
         document.getElementById("temp").textContent = `Temperature: ${data.temp} °C`;
