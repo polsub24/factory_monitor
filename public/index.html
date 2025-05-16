@@ -1,22 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Industrial Safety Monitor</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    h2 { text-align: center; }
-    .data-item { margin: 10px 0; font-size: 1.2em; }
-    .alert { font-weight: bold; color: red; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #e9ecef;
+      color: #333;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 600px;
+      margin: 40px auto;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      color: #343a40;
+    }
+
+    .data-item {
+      font-size: 1.2rem;
+      padding: 12px 16px;
+      border-left: 6px solid #dee2e6;
+      margin: 12px 0;
+      border-radius: 6px;
+      background-color: #f8f9fa;
+      transition: border-color 0.3s ease;
+    }
+
+    .alert {
+      font-weight: bold;
+      color: #dc3545;
+      background-color: #ffe5e5;
+      border-color: #dc3545 !important;
+    }
+
+    .status-green {
+      border-color: #28a745 !important;
+      background-color: #e6ffed;
+    }
+
+    .status-yellow {
+      border-color: #ffc107 !important;
+      background-color: #fff9e6;
+    }
+
+    .status-red {
+      border-color: #dc3545 !important;
+      background-color: #ffe5e5;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 20px;
+      }
+
+      .data-item {
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -35,18 +98,29 @@
         const res = await fetch("/api/latest");
         const data = await res.json();
 
-        document.getElementById("temp").textContent = `Temperature: ${data.temp} °C`;
-        document.getElementById("humidity").textContent = `Humidity: ${data.humidity} %`;
-        document.getElementById("presence").textContent = `Worker Present: ${data.worker_present ? 'Yes' : 'No'}`;
-        document.getElementById("machine").textContent = `Machine Active: ${data.machine_active ? 'Yes' : 'No'}`;
-        document.getElementById("alert").textContent = `Alert: ${data.alert}`;
+        const temp = document.getElementById("temp");
+        const humidity = document.getElementById("humidity");
+        const presence = document.getElementById("presence");
+        const machine = document.getElementById("machine");
+        const alertBox = document.getElementById("alert");
+
+        temp.textContent = `Temperature: ${data.temp} °C`;
+        humidity.textContent = `Humidity: ${data.humidity} %`;
+        presence.textContent = `Worker Present: ${data.worker_present ? 'Yes' : 'No'}`;
+        machine.textContent = `Machine Active: ${data.machine_active ? 'Yes' : 'No'}`;
+        alertBox.textContent = `Alert: ${data.alert}`;
+
+        // Highlight logic
+        presence.className = `data-item ${data.worker_present ? 'status-green' : 'status-red'}`;
+        machine.className = `data-item ${data.machine_active ? 'status-green' : 'status-yellow'}`;
+        alertBox.className = `data-item alert ${data.alert !== "None" ? 'status-red' : 'status-green'}`;
       } catch (err) {
         console.error("Error fetching data:", err);
       }
     };
 
-    setInterval(fetchData, 2000); // Poll every 2 seconds
-    fetchData(); // Initial call
+    setInterval(fetchData, 2000);
+    fetchData();
   </script>
 </body>
 </html>
