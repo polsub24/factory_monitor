@@ -5,6 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Industrial Safety Monitor</title>
   <style>
+    :root {
+      --bg-color: #e9ecef;
+      --card-bg: #fff;
+      --text-color: #333;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+      --item-bg: #f8f9fa;
+      --border-neutral: #dee2e6;
+      --alert-bg: #ffe5e5;
+      --alert-text: #dc3545;
+      --green-bg: #e6ffed;
+      --green-border: #28a745;
+      --yellow-bg: #fff9e6;
+      --yellow-border: #ffc107;
+      --red-bg: #ffe5e5;
+      --red-border: #dc3545;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1e1e2f;
+      --card-bg: #2c2c3e;
+      --text-color: #f1f1f1;
+      --card-shadow: rgba(255, 255, 255, 0.05);
+      --item-bg: #3a3a4d;
+      --border-neutral: #555;
+      --alert-bg: #4a1e1e;
+      --alert-text: #ff6b6b;
+      --green-bg: #244d33;
+      --green-border: #34d399;
+      --yellow-bg: #4f4425;
+      --yellow-border: #facc15;
+      --red-bg: #4a1e1e;
+      --red-border: #f87171;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -13,62 +47,81 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #e9ecef;
-      color: #333;
+      background: var(--bg-color);
+      color: var(--text-color);
       padding: 20px;
+      transition: background 0.3s, color 0.3s;
     }
 
     .card {
-      background: #fff;
+      background: var(--card-bg);
       border-radius: 16px;
       padding: 30px;
       max-width: 600px;
       margin: 40px auto;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      transition: box-shadow 0.3s ease;
+      box-shadow: 0 8px 20px var(--card-shadow);
+      transition: background 0.3s, box-shadow 0.3s;
     }
 
     .card:hover {
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 30px var(--card-shadow);
     }
 
     h2 {
       text-align: center;
       font-size: 1.8rem;
       margin-bottom: 25px;
-      color: #343a40;
+      color: var(--text-color);
     }
 
     .data-item {
       font-size: 1.2rem;
       padding: 12px 16px;
-      border-left: 6px solid #dee2e6;
+      border-left: 6px solid var(--border-neutral);
       margin: 12px 0;
       border-radius: 6px;
-      background-color: #f8f9fa;
-      transition: border-color 0.3s ease;
+      background-color: var(--item-bg);
+      transition: border-color 0.3s, background-color 0.3s;
     }
 
     .alert {
       font-weight: bold;
-      color: #dc3545;
-      background-color: #ffe5e5;
-      border-color: #dc3545 !important;
+      color: var(--alert-text);
+      background-color: var(--alert-bg);
+      border-color: var(--red-border) !important;
     }
 
     .status-green {
-      border-color: #28a745 !important;
-      background-color: #e6ffed;
+      border-color: var(--green-border) !important;
+      background-color: var(--green-bg);
     }
 
     .status-yellow {
-      border-color: #ffc107 !important;
-      background-color: #fff9e6;
+      border-color: var(--yellow-border) !important;
+      background-color: var(--yellow-bg);
     }
 
     .status-red {
-      border-color: #dc3545 !important;
-      background-color: #ffe5e5;
+      border-color: var(--red-border) !important;
+      background-color: var(--red-bg);
+    }
+
+    .toggle-theme {
+      display: block;
+      margin: 0 auto 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: none;
+      border: 2px solid var(--text-color);
+      color: var(--text-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-theme:hover {
+      background-color: var(--text-color);
+      color: var(--bg-color);
     }
 
     @media (max-width: 640px) {
@@ -82,7 +135,8 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="light">
+  <button class="toggle-theme" onclick="toggleTheme()">🌙 Toggle Dark Mode</button>
   <div class="card">
     <h2>📊 Human-Aware Monitor Dashboard</h2>
     <div class="data-item" id="temp">Temperature: -- °C</div>
@@ -110,13 +164,18 @@
         machine.textContent = `Machine Active: ${data.machine_active ? 'Yes' : 'No'}`;
         alertBox.textContent = `Alert: ${data.alert}`;
 
-        // Highlight logic
         presence.className = `data-item ${data.worker_present ? 'status-green' : 'status-red'}`;
         machine.className = `data-item ${data.machine_active ? 'status-green' : 'status-yellow'}`;
         alertBox.className = `data-item alert ${data.alert !== "None" ? 'status-red' : 'status-green'}`;
       } catch (err) {
         console.error("Error fetching data:", err);
       }
+    };
+
+    const toggleTheme = () => {
+      const body = document.body;
+      const current = body.getAttribute("data-theme");
+      body.setAttribute("data-theme", current === "light" ? "dark" : "light");
     };
 
     setInterval(fetchData, 2000);
